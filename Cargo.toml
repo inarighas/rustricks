@@ -1,0 +1,32 @@
+[package]
+name = "rustricks"
+version = "0.1.0"
+edition = "2021"
+
+rust-version = "1.66.0"
+
+# See more keys and their definitions at 
+## https://doc.rust-lang.org/cargo/reference/manifest.html
+
+# Crate build related
+# exclude = [
+#     "examples/*",
+#     "tests/*",
+# ]
+
+[[bin]]
+name = "main"
+test = false
+bench = false
+
+[[example]]
+name = "result"
+
+[dependencies]
+# No dependencies 
+
+# crates.io metadata
+# documentation = ""
+# repository = "https://github.com/inarighas/rustricks"
+# homepage = "https://github.com/inarighas/rustricks"
+# categories = ["cat::name""]

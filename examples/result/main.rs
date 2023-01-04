@@ -12,13 +12,17 @@
 // }
 
 use std::fs::File; // standard library => File system => File object 
+use std::io::ErrorKind
 
 fn main(){
     // f : Resule<File, std::io::Error>
-    let f = File::open("./examples/result/textfile.txt");
+    let f = File::open("./examples/result/textfile2.txt");
     let s = match f {
         Ok(file) => file,
-        Err(error) => panic!("Problem with the file {:?}", error),
+        Err(error) => match error.kind() {
+            ErrorKind::NotFound => println!("File not found - hello!");
+        },
+        _ => panic!("Problem with the file {:?}", error),
     };
     println!("{:?}",s);
 }

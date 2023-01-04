@@ -1,18 +1,25 @@
 # Result type and Error handling in Rust
 
+When it comes to errors in Rust language, there are two types:
 
-## Panic attack (`panic!` macro)
-***or what happen when errors are unrecoverable***
+- **Unrecoverable** errors: It is just the error that stop your program from running. Sometime we refer to them as "runtime errors". For instance, when the programmer try to access beyond the bounds of an array or to some ressource or file that is not (or no more) available.
+- **Recoverable** errors: the ones that you can catch while your program is running. No runtime errors, and a little similar to "throw-catch" procedures in higher level languages. Once the error is catched, the programmer can decide what's going be done depending on the situation "and recover from it".
 
-Panic macro means that an unmanaged runtime error has been triggered and the executable will either perform:
+## Unrecoverable errors: Panic attack
+
+***What happen when errors are unrecoverable? What is the `panic!` macro?***
+
+Panic macro is what Rust use to stop a program when some unallowed actions are performed using runtime. In other words, it means that an unmanaged runtime error has been triggered and the executable will either perform:
+
 - stack unwinding which is the default behavior and means that it will *slowly cleaning all function calls in the stacks*
 - or abort everything and let the operating system handling the stack. This can be used by specifying this in the `Cargo.toml` file:
+
     ```toml
     [profile.release]
     panic=abort
     ```
 
-Now, let's consider this example.
+Now, let's consider this example. We will use the panic macro explicitly in our code in order to "simulate" the case when some unrecoverable error is triggered. Actually, we are basically forcing the program to "panic".
 
 ```rust
 fn panic_attack(){
@@ -25,6 +32,7 @@ fn main(){
 ```
 
 To enable backtrace, just run `RUST_BACKTRACE=1` with `cargo run` command.
+
 ```plain
 ➜  rustricks git:(main) ✗ RUST_BACKTRACE=1 cargo run --example result 
     Finished dev [unoptimized + debuginfo] target(s) in 0.00s
@@ -55,6 +63,8 @@ fn main(){
 
 ## Recoverable errors
 
+**Result type** is what Rust implements to replace exceptions.
+
 ```rust
 enum Result<T, E>{
     Ok(T),
@@ -74,12 +84,18 @@ fn main(){
         Err(error) => panic!("Problem with the file {:?}", error),
     };
 }
-
 ```
+The [`match` keyword](https://doc.rust-lang.org/rust-by-example/flow_control/match.html) allows pattern matching and it can be used like a C's `switch-case` keywords.
+In this example, there are two possibiloties after opening the file. Either no error is raised and `f` will be a reference to the file, or an error will be raised and the program will panic (cause a runtime error).
+If the file does not exist, the program will panic and print "`problem with the file7` +  `<the error message>`". The output we get will look like this:
 
+```plain
+> thread 'main' panicked at 'Problem with the file Os { code: 2, kind: NotFound, message: "No such file or directory" }', examples/result/main.rs:7:23
+```
 
 ## Sources
 
 - The Dev Method (2022), *Rust: Error Handling*, from <https://youtu.be/y3wUCb-uS3g>
 - *The Rust Programming Language Book* (2022), from <https://doc.rust-lang.org/stable/book/>
+- *Rust By Example*, from https://doc.rust-lang.org/stable/rust-by-example/
 - Google (2022), *Comprehensive Rust course*, from <https://google.github.io/comprehensive-rust/>

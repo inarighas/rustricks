@@ -16,5 +16,19 @@ For each feature (let's call it `feats`), you can :
 
 ### a. Result type & error handling (`result`)
 
+- Panic attack
+- Recoverable & Unrecoverable errors
+- Result type
+- `.unwrap()` method
 
 ### b. Lifetime (`lifetime`)
+
+- Reference lifetime in Rust
+- Ownership
+- Borrowing
+
+### c. Threads and Concurrency (`threads`)
+
+- Creating & running threads
+- Message-passing between threads
+- Shared-state concurrency

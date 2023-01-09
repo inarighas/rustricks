@@ -85,6 +85,7 @@ fn main(){
     };
 }
 ```
+
 The [`match` keyword](https://doc.rust-lang.org/rust-by-example/flow_control/match.html) allows pattern matching and it can be used like a C's `switch-case` keywords.
 In this example, there are two possibiloties after opening the file. Either no error is raised and `f` will be a reference to the file, or an error will be raised and the program will panic (cause a runtime error).
 If the file does not exist, the program will panic and print "`problem with the file7` +  `<the error message>`". The output we get will look like this:
@@ -92,6 +93,71 @@ If the file does not exist, the program will panic and print "`problem with the 
 ```plain
 > thread 'main' panicked at 'Problem with the file Os { code: 2, kind: NotFound, message: "No such file or directory" }', examples/result/main.rs:7:23
 ```
+
+Now, I will try to show you an example of how to "recover" from an error when it is possible. The code is structrured using nested `match` keywords.
+
+```rust
+use std::fs::File; // standard library => File system => File object 
+use std::io::ErrorKind;
+
+fn main(){
+    // f : Resule<File, std::io::Error>
+    let filename : &str = "./examples/result/textfile2.txt";
+    let f = File::open(filename);
+    let _s = match f {
+        Ok(file) => file,
+        Err(error) =>
+            match error.kind() {
+                ErrorKind::NotFound => match File::create(filename){
+                    Ok(fc) => fc,
+                    Err(_e) => panic!("Problem while creating the file")
+                },
+            other_error =>
+                panic!("Problem openening the file {:?}", other_error)
+            }
+        };
+    println!("Goodbye!");
+}
+```
+
+In this example, when the first `File::open` raises an error, we use ErrorKind module to check for its type (retrieved using `error.kind()`). Basically, we use an other `match` to check if the file does not exist (`ErrorKind::NotFound`); if it is the case we create it (recovering), and if not we raise the error (becomes unrecoverable)
+
+These nested `match` procedures can me replaced by some native methods in Rust named `.unwrap()` `.unwrap_or_else()`. the first one (`.unwrap()`) will perfom something similar to what we did in the fist example of recoverable errors and the second method (`.unwrap_or_else()`) will correspond to the second example.
+
+Let's consider this code example:
+
+```rust
+use std::fs::File; // standard library => File system => File object 
+use std::io::ErrorKind;
+
+fn main(){
+    // f : Resule<File, std::io::Error>
+    let filename : &str = "./examples/result/textfile2.txt";
+    let f = File::open(filename).unwrap()
+    println!("Goodbye!");
+
+```
+
+and:
+
+```rust
+use std::fs::File; // standard library => File system => File object 
+use std::io::ErrorKind;
+
+fn main(){
+    // f : Resule<File, std::io::Error>
+    let filename : &str = "./examples/result/textfile2.txt";
+    let f = File::open(filename).unwrap_or_else(|error| {
+        if error.kind() == ErrorKind::NotFound {
+            File::create(filename).unwrap();
+        }
+        else panic!("Proble openingthe file: {:?}", error);
+        }
+        );
+    println!("Goodbye!");
+}
+```
+
 
 ## Sources
 
